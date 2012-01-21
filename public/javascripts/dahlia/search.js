@@ -7,7 +7,7 @@ $(document).ready(function(){
 		var items = [];
 		$.each(data.photoset.photo, function(key, photo) {
 			photos[photo.id] = photo;
-			var url = getPhotoUrl(photo, "s");
+			var url = '/flickr_image/'+getPhotoUrl(photo, "s");
 			$('#dahliaThumbs').append('<li class="thumbnail" id="photo_' + photo.id + '"><a href="' + url + '" data-photoid="'+ photo.id +'"><img src="'+url+'" /></li>');    
 			
 		});
@@ -21,10 +21,21 @@ $(document).ready(function(){
 		    // load image from data url
 		    var imageObj = new Image();
 		    imageObj.onload = function(){
-		        context.drawImage(this, 0, 0);
+		        context.clearRect(0, 0, canvas.width, canvas.height);
+				context.drawImage(this, 0, 0);
+				var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+				var data = imageData.data;
+
+				// to quickly iterate over all pixels, use a for loop like this
+				for (var i = 0; i < data.length; i += 4) {
+					var red = data[i]; // red
+					var green = data[i + 1]; // green
+					var blue = data[i + 2]; // blue
+					// i+3 is alpha (the fourth element)
+				}
 		    };
 
-		    imageObj.src = getPhotoUrl(photo, "z");
+		    imageObj.src = '/flickr_image/' + getPhotoUrl(photo, "z");
 		});
 	});
 });
@@ -43,6 +54,6 @@ function getPhotoUrl(photo, size)
 		+ '_'
 		+ size
 		+ '.jpg';
-	
+	url = encodeURIComponent(url);
 	return url;
 }
