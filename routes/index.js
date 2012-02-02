@@ -11,3 +11,8 @@ exports.index = function(req, res){
 exports.dahlia = function(req, res){
   res.render('dahlia/dahlia', { title: 'Dahlia' })
 };
+
+
+exports.dahlia.process = function(req, res){
+  res.render('dahlia/process', { title: 'Process' })
+};

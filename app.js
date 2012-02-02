@@ -6,7 +6,6 @@
 var express = require('express')
   , routes = require('./routes')
   , url = require('url')
-  , phantom = require('phantom')
   , fs = require('fs')
   , path = require('path')
   , http = require('http');
@@ -20,7 +19,7 @@ app.configure(function(){
   app.set('view engine', 'jade');
   app.use(express.bodyParser());
   app.use(express.methodOverride());
-  //app.use(express.compiler({ src: __dirname + '/public', enable: ['less'] }));
+  app.use(express.compiler({ src: __dirname + '/public', enable: ['less'] }));
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
 });
@@ -31,6 +30,7 @@ app.configure('development', function(){
 
 app.configure('production', function(){
   app.use(express.errorHandler()); 
+  app.get('/dahlia/process', routes.dahlia.process);
 });
 
 
@@ -38,7 +38,6 @@ app.configure('production', function(){
 
 app.get('/', routes.index);
 app.get('/dahlia', routes.dahlia);
-app.get('/dahlia/search', routes.dahlia.search);
 
 
 // image proxy
@@ -55,22 +54,23 @@ app.get('/flickr_image/:image_url', function(request_from_client, response_to_cl
 var port;
 
   fs.stat('public/images/cache/'+filename, function (err, stats) { 
-	if(err)
-	{
-		console.log('cache exists for: ' + filename);
-		image_host_name = 'localhost';  //TODO: get the current hostname
-		image_url = 'http://'+image_host_name+':3000/images/cache/'+filename;  //TODO: read the filesystem image and return
-		port = 3000;
-	}
-	else
-	{
-		console.log('no cache for: ' + filename);
+	// if(stats)  //TODO: figure out why this doesn't work
+	// 	{
+	// 		console.log('cache exists for: ' + filename);
+	// 		image_host_name = 'localhost';  //TODO: get the current hostname
+	// 		//image_url = 'http://'+image_host_name+':3000/images/cache/'+filename;  //TODO: read the filesystem image and return
+	// 		port = 3000;
+	// 	}
+	// 	else
+	// 	{
+	//	console.log('no cache for: ' + filename);
 		image_host_name = url.parse(image_url).hostname;
 		port = 80;
-	}
+		
+	//}
 	
 	http_client = http.createClient(port, image_host_name);
-	image_get_request = http_client.request('GET', image_url, {"host": image_host_name, "port":port});
+	image_get_request = http_client.request('GET', pathname, {"host": image_host_name, "port":port});
 	  image_get_request.addListener('response', function(proxy_response){
 		var current_byte_index = 0;
 		var response_content_length = parseInt(proxy_response.header("Content-Length"));
@@ -94,10 +94,22 @@ var port;
 });
 
 app.post('/hues/json', function(request_from_client, response_to_client){
-	var image_url = request_from_client.params.hues_json;
-	var stream = fs.createWriteStream(image_url+".json");
+	var hues = request_from_client.body.hues_json;
+	var photo_id = request_from_client.body.photo_id;
+	var stream = fs.createWriteStream('public/json/'+photo_id+".json");
 	stream.once('open', function(fd) {
-	  stream.write(image_url+"\n");
+	  stream.write(hues);
+	});
+	response_to_client.send('');
+});
+
+
+app.post('/hues/svg', function(request_from_client, response_to_client){
+	var svg = request_from_client.body.hues_svg;
+	var photo_id = request_from_client.body.photo_id;
+	var stream = fs.createWriteStream('public/svg/'+photo_id+".svg");
+	stream.once('open', function(fd) {
+	  stream.write(svg);
 	});
 	response_to_client.send('');
 });
