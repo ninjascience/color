@@ -11,3 +11,8 @@ svg {
   shape-rendering: crispEdges;
 
 }
+
+#dahliaModal {
+  display:none;
+  padding:4px;
+}

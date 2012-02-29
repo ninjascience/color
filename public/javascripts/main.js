@@ -22,6 +22,7 @@ require([
   // Some plugins have to be loaded in order due to there non AMD compliance
   // Because these scripts are not "modules" they do not pass any values to the definition function below
   'order!libs/jquery/jquery-1.7.1-min',
+  'order!libs/bootstrap/bootstrap.min',
   'order!libs/underscore/underscore-min',
   'order!libs/backbone/backbone-min'
 ], function(App){
