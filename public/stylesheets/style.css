@@ -12,7 +12,22 @@ svg {
 
 }
 
-#dahliaModal {
-  display:none;
+#colorModal {
+  /*display:none;*/
+  width:865px;
   padding:4px;
+}
+
+#colorModal #imageCanvas, #colorModal #smallChart{
+  position:absolute;
+}
+
+#colorModal #imageCanvas {
+  top:4px;
+  left:4px;
+}
+
+#colorModal #smallChart {
+  bottom:4px;
+  right:4px;
 }

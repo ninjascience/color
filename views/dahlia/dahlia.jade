@@ -7,11 +7,14 @@ div
 
   ul.thumbnails
     li.thumbnail
-      div#chart(width=360,height=360)
+      canvas#chartCanvas(width=720,height=380)
   ul#photoGallery.thumbnails
     li#photo_thumb_template.thumbnail(style='display: none')
       a(id='thumb_' + photoId)
         img(src=photoUrl)
         
-  div#dahliaModal.modal.fade
+  div#colorModal.modal.fade
     canvas#imageCanvas(width=500,height=500)
+    div#smallChart(width=360,height=380)
+    a#prevNav.carousel-control.left(href='#myCarousel',data-slide='prev') &lsaquo;
+    a#nextNav.carousel-control.right(href='#myCarousel',data-slide='next') &rsaquo;

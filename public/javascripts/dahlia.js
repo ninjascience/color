@@ -5,14 +5,14 @@ define([
   'jQuery',     // lib/jquery/jquery
   'Underscore', // lib/underscore/underscore
   'Backbone',    // lib/backbone/backbone
-  'Chroma',      // lib/chroma/chroma-min
   'libs/bootstrap/bootstrap',
   'models/PhotoSet',
   'views/PhotoThumb',
   'views/HSLBarChart',
-], function($, _, Backbone, Chroma, Backbone, PhotoSet, PhotoThumb, HSLBarChart){
+], function($, _, Backbone, Bootstrap, PhotoSet, PhotoThumb, HSLBarChart){
   $.getJSON('/json/hsl_dahlias.json', function success(data){
-	  //HSLBarChart.render('#chart',data);
+	  HSLBarChart.render('#chart',data,2);
+	  
 	})
   
   
@@ -29,9 +29,10 @@ define([
         $.getJSON('/json/hsl_'+photo.id+'.json', function success(data){
   			  console.log('cached hue data found');
   			  
-          $('#imageCanvas').animate({width:imageObj.width,height:imageObj.height,duration:750});
-          $('#dahliaModal').animate({width:imageObj.width,height:imageObj.height,duration:750});
-    			//HSLBarChart.render('#chart',data);
+          $('#imageCanvas').attr('height',imageObj.height).attr('width', imageObj.width);
+          $('#colorModal').animate({width:imageObj.width+360+5,height:imageObj.height,duration:750});
+    			context.drawImage(imageObj, 0, 0);
+    			HSLBarChart.render('#smallChart',data,1);
     		}).error(function error(err){
     			console.log('no hue data cached on server');
     			var hues = photo.sampleHSL(canvas);
@@ -55,7 +56,7 @@ define([
   var clickHandler = function(photo){
     processPhoto(photo);
     
-    $('#dahliaModal').modal({})
+    $('#colorModal').modal({})
   };
   
   photoSet.bind('reset', function addPhoto(photos){
@@ -70,6 +71,12 @@ define([
       //         chart.render($('#chart'), );
       //       });
       $('#photoGallery').append(el);
+    });
+    $('#prevNav').click(function prevClick(event) {
+      console.log('click prev');
+    });
+    $('#nextNav').click(function nextClick(event) {
+      console.log('click next');
     });
   });
   photoSet.url = '/json/dahlia_set_small.json';

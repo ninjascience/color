@@ -1,19 +1,13 @@
 //Filename: PhotoGallery.js
 define([
-// These are path alias that we configured in our bootstrap
 'jQuery',
-// libs/jquery/jquery
-'Underscore',
-// libs/underscore/underscore
-'Backbone',
-// libs/backbone/backbone
 'libs/d3/d3wrap'
 ],
-function($, _, Backbone, d3) {
+function($, d3) {
     var HSLBarChart = {
 
 
-        render: function(selector, hues) {
+        render: function(selector, hues, colWidth) {
             $(selector).empty();
             
             //TODO: use d3.nest?
@@ -25,9 +19,10 @@ function($, _, Backbone, d3) {
               }
               huesNested.push(hue);
             }
-            
-            var colWidth = 2,
-            w = colWidth * 360,
+            if(colWidth === undefined) {
+              colWidth = 1;
+            }
+            var w = colWidth * 360,
             h = 360,
             x = d3.scale.linear().range([0, w]),
             y = d3.scale.linear().range([0, h]);
