@@ -11,7 +11,7 @@ define([
   'views/HSLBarChart',
 ], function($, _, Backbone, Bootstrap, PhotoSet, PhotoThumb, HSLBarChart){
   $.getJSON('/json/hsl_dahlias.json', function success(data){
-	  HSLBarChart.render('#chart',data,2);
+	  HSLBarChart.getChart('#allDahliasChart',data);
 	  
 	})
   

@@ -2,12 +2,12 @@ photoId = "{{photoId}}"
 photoUrl = "{{photoUrl}}"
 script(src='/javascripts/dahlia.js')
 div
-  h1= title
+  
   
 
   ul.thumbnails
     li.thumbnail
-      canvas#chartCanvas(width=720,height=380)
+      canvas#allDahliasChart(width=720,height=(360*10)+20)
   ul#photoGallery.thumbnails
     li#photo_thumb_template.thumbnail(style='display: none')
       a(id='thumb_' + photoId)
@@ -15,6 +15,6 @@ div
         
   div#colorModal.modal.fade
     canvas#imageCanvas(width=500,height=500)
-    div#smallChart(width=360,height=380)
+    canvas#smallChart(width=360,height=380)
     a#prevNav.carousel-control.left(href='#myCarousel',data-slide='prev') &lsaquo;
     a#nextNav.carousel-control.right(href='#myCarousel',data-slide='next') &rsaquo;

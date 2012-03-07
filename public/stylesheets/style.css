@@ -12,6 +12,11 @@ svg {
 
 }
 
+#allDahliasChart {
+  width:720px;
+  height:380px;
+}
+
 #colorModal {
   /*display:none;*/
   width:865px;
