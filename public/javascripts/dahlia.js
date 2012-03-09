@@ -11,13 +11,14 @@ define([
   'views/HSLBarChart',
 ], function($, _, Backbone, Bootstrap, PhotoSet, PhotoThumb, HSLBarChart){
   $.getJSON('/json/hsl_dahlias.json', function success(data){
-	  HSLBarChart.getChart('#allDahliasChart',data);
+	  HSLBarChart.render('#allDahliasChart',data);
 	  
 	})
   
-  
+  var currentPhoto;
   var photoSet = new PhotoSet();
   var processPhoto = function(photo){
+    currentPhoto = photo;
     var canvas = $('#imageCanvas')[0];
   	var context = canvas.getContext("2d");
   	context.clearRect(0, 0, canvas.width, canvas.height);
@@ -25,14 +26,17 @@ define([
       var imageObj = new Image();
       imageObj.onload = function(){
   		  context.clearRect(0, 0, canvas.width, canvas.height);
+  		  $('#imageCanvas').hide();
+			  HSLBarChart.clear('#smallChart');
   		  context.drawImage(imageObj, 0, 0);
         $.getJSON('/json/hsl_'+photo.id+'.json', function success(data){
   			  console.log('cached hue data found');
-  			  
           $('#imageCanvas').attr('height',imageObj.height).attr('width', imageObj.width);
-          $('#colorModal').animate({width:imageObj.width+360+5,height:imageObj.height,duration:750});
-    			context.drawImage(imageObj, 0, 0);
-    			HSLBarChart.render('#smallChart',data,1);
+          $('#colorModal').animate({width:imageObj.width+360+5,height:imageObj.height,duration:750}, function complete(){
+    			  context.drawImage(imageObj, 0, 0);
+    			  $('#imageCanvas').show();
+      			HSLBarChart.render('#smallChart',data,1);
+          });
     		}).error(function error(err){
     			console.log('no hue data cached on server');
     			var hues = photo.sampleHSL(canvas);
@@ -59,6 +63,7 @@ define([
     $('#colorModal').modal({})
   };
   
+  
   photoSet.bind('reset', function addPhoto(photos){
     photoArray = photos.toArray();
     
@@ -73,13 +78,21 @@ define([
       $('#photoGallery').append(el);
     });
     $('#prevNav').click(function prevClick(event) {
-      console.log('click prev');
+      var index = photoSet.indexOf(currentPhoto);
+      if(index > 0) {
+        var prevPhoto = photoSet.at(index-1);
+        processPhoto(prevPhoto);
+      }
     });
     $('#nextNav').click(function nextClick(event) {
-      console.log('click next');
+      var index = photoSet.indexOf(currentPhoto);
+      if(index < photoSet.length-1) {
+        var nextPhoto = photoSet.at(index+1);
+        processPhoto(nextPhoto);
+      }
     });
   });
-  photoSet.url = '/json/dahlia_set_small.json';
+  photoSet.url = '/json/dahlia_set.json';
   photoSet.fetch();
   return {};
 });

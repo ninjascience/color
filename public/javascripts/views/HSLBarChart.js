@@ -6,19 +6,22 @@ define([
 function($, d3) {
     var HSLBarChart = {
 
-        getChart: function(selector, hues) {
-          var id = $(selector).id;
-          var canvas = $(selector)[0];
-        	var context = canvas.getContext("2d");
-        	context.clearRect(0, 0, canvas.width, canvas.height);
-          // load image from data url
-          var imageObj = new Image();
-          this.render(selector, hues);
+        clear: function(selector) {
+          var element = $(selector);
+          
+          var canvas = element[0];
+          var context = canvas.getContext('2d');
+      		context.clearRect(0, 0, canvas.width, canvas.height);
         },
         
         render: function(selector, hues) {
             var element = $(selector);
             
+            this.clear(selector);
+        		
+            var canvas = element[0];
+            var context = canvas.getContext('2d');
+        		
             //TODO: use d3.nest?
             var huesNested = [];
             for(var i = 0;i < hues.length;i++){
@@ -53,9 +56,6 @@ function($, d3) {
             var lastHue;
             var hue = 0;
             var bStart = 0;
-            var canvas = $(selector)[0];
-            var context = canvas.getContext('2d');
-        		context.clearRect(0, 0, canvas.width, canvas.height);
             huesNested.map(function(col) {
               var bStart = 0;
               col.map(function(block) {

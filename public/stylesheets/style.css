@@ -35,4 +35,6 @@ svg {
 #colorModal #smallChart {
   bottom:4px;
   right:4px;
+  height:380px;
+  width:360px;
 }
