@@ -1,0 +1,21 @@
+photoId = "{{photoId}}"
+photoUrl = "{{photoUrl}}"
+script(src='/javascripts/rhone/rhone.js')
+link(rel="stylesheet", type="text/css", href="/stylesheets/rhone.css")
+div
+  
+  h1#dahliaTitle= 
+  p#description 
+  div.row#weekGalleries
+        
+  div#colorModal.modal.fade
+    canvas#imageCanvas(width=500,height=500)
+    canvas#smallChart(width=360,height=(360*10)+20)
+    a#prevNav.carousel-control.left(href='#myCarousel',data-slide='prev') &lsaquo;
+    a#nextNav.carousel-control.right(href='#myCarousel',data-slide='next') &rsaquo;
+    
+  ul#photoGallery_template.thumbnails(style='display: none')
+  
+  li#photo_thumb_template.thumbnail(style='display: none')
+    a(id='thumb_' + photoId)
+      img(src=photoUrl)
