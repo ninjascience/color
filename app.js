@@ -38,6 +38,7 @@ app.configure('production', function(){
 
 app.get('/', routes.index);
 app.get('/dahlia', routes.dahlia);
+app.get('/rhone', routes.rhone);
 
 
 // image proxy

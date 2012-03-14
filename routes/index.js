@@ -13,6 +13,11 @@ exports.dahlia = function(req, res){
 };
 
 
+exports.rhone = function(req, res){
+  res.render('rhone/rhone', { title: 'Rhone Street Gardens' })
+};
+
+
 exports.dahlia.process = function(req, res){
   res.render('dahlia/process', { title: 'Process' })
 };
