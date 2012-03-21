@@ -1,8 +1,9 @@
 // Filename: models/flickr-photo.js
 define([
   'Underscore',
-  'Backbone'
-], function(_, Backbone){
+  'Backbone',
+  'libs/chroma/chroma'
+], function(_, Backbone,chroma){
   var FlickrPhoto = Backbone.Model.extend({
     
 
@@ -37,14 +38,18 @@ define([
     	return url;
     }, 
     
-    sampleHSL: function(canvas){
-      var hues = [];
+    sampleHSL: function(canvas, hues){
+      if(!hues) {
+        var hues = [];
+      }
       var context = canvas.getContext("2d");
     	var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
     	var data = imageData.data;
     	for (var h = 0; h < 360; h++)
     	{
-    		hues[h] = [];
+    		if(!hues[h]){
+    		  hues[h] = [];
+    		}
     	}
     	// to quickly iterate over all pixels, use a for loop like this
     	for (var i = 0; i < data.length; i += 4) {

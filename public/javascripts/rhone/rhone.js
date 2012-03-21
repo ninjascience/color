@@ -26,16 +26,63 @@ define([
 	  });
 	  
 	  weeks.map(function(photoSet){
-	    $('#weekGalleries').append('<ul id="weekGallery_'+photoSet.weekNumber+'" class="thumbnails"/>');
+	    var gallery = $('#weekGalleries').append('<ul id="weekGallery_'+photoSet.weekNumber+'" class="thumbnails"/>');
+	    $('#weekGallery_'+photoSet.weekNumber).append('<li class="chart"><canvas id="weekChart_'+ photoSet.weekNumber+'" class="weekChart" width="360" height="3620" /></li>');
 	    photoSet.map(function(photo) {
 	      var view = new PhotoThumb({'model':photo});
         //view.clickHandler = clickHandler;
         var el = view.render().el;
 	      $('#weekGallery_'+photoSet.weekNumber).append(el);
 	    });
+	    $.getJSON('json/hsl_rhone_week_'+photoSet.weekNumber+'.json', function success(data){
+			  console.log('cached hue data found');
+        
+    			HSLBarChart.render('#weekChart_'+photoSet.weekNumber, data, 1);
+        
+  		}).error(function error(err){
+  			console.log('no hue data cached on server for week: ' + photoSet.weekNumber);
+  			$('#weekGallery_'+photoSet.weekNumber+' li').first().click(function(event){
+  			  photoSet.currentPhoto = photoSet.models[0];
+  			  process(photoSet.currentPhoto, []);
+  			});
+      });
 	  });
 	  
 	})
+	
+	function process(photo, hues){
+	  var canvas = $('#sampleCanvas')[0];
+  	var context = canvas.getContext("2d");
+  	context.clearRect(0, 0, canvas.width, canvas.height);
+    // load image from data url
+    var imageObj = new Image();
+    imageObj.onload = function(){
+		  context.clearRect(0, 0, canvas.width, canvas.height);
+		  context.drawImage(imageObj, 0, 0);
+      hues = photo.sampleHSL(canvas, hues);
+      if(photo !== photo.collection.models[photo.collection.length-1]) {
+        var nextPhotoIndex = photo.collection.models.indexOf(photo)+1;
+        photo.collection.currentPhoto = photo.collection.models[nextPhotoIndex];
+			  process(photo.collection.currentPhoto, hues);
+      }
+      else
+      {
+        var huesJSON = JSON.stringify(hues);
+      	$.ajax({
+      	  type: 'POST',
+      	  url: '/hues/json',
+      	  data: {'hues_json':huesJSON, 'photo_id':'rhone_week_'+photo.collection.weekNumber},
+      	  success: function(success){
+      	    
+      		  console.log('posted data');
+      		}
+    		});
+        HSLBarChart.render('#weekChart_'+photo.collection.weekNumber, hues, 1);
+      }
+    };
+
+    imageObj.src = '/flickr_image/' + encodeURIComponent(photo.getPhotoUrl("s"));
+	}
 	
 	function getWeek(date) {
 	  var year = date.getFullYear();
@@ -49,6 +96,7 @@ define([
 	  var hourInYear = minInYear/60;
 	  var dayInYear = hourInYear/24;
 	  var weekInYear = Math.floor(dayInYear/7);
-	  return {week:weekInYear,year:year};
+	  var weekDate = new Date((weekInYear*7*24*60*60*1000)+yearDate.getTime());
+	  return {week:weekInYear,year:year,date:weekDate};
 	}
 });
