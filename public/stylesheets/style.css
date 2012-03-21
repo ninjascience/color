@@ -28,22 +28,22 @@ svg {
   height:380px;
 }
 
-#colorModal {
+.colorModal {
   /*display:none;*/
   width:865px;
   padding:4px;
 }
 
-#colorModal #imageCanvas, #colorModal #smallChart{
+.colorModal .imageCanvas, .colorModal .smallChart{
   position:absolute;
 }
 
-#colorModal #imageCanvas {
+.colorModal .imageCanvas {
   top:4px;
   left:4px;
 }
 
-#colorModal #smallChart {
+.colorModal .smallChart {
   bottom:4px;
   right:4px;
   height:380px;

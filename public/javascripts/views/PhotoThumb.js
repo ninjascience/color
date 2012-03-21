@@ -11,9 +11,14 @@ define([
     tagName: "li",
     className: "thumbnail",
     template: _.template($('#photo_thumb_template').html()),
-    clickHandler: null,
     events: {
      'click': 'onClick'
+    },
+    
+    clickHandler: function(photo){
+      photo.processPhoto();
+
+      $('#modal_'+photo.collection.weekNumber).modal({})
     },
     
     initialize: function() {

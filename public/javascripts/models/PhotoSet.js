@@ -5,8 +5,10 @@ define([
   'Backbone',
   'models/FlickrPhoto'
 ], function($, _, Backbone, FlickrPhoto){
+  
   var PhotoSet = Backbone.Collection.extend({
     model: FlickrPhoto,
+    currentPhoto: null,
     parse: function(response) {
       var photos = [];
       $.each(response.photoset.photo, function(key, photo) {

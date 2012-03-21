@@ -1,8 +1,11 @@
 // Filename: models/flickr-photo.js
 define([
+  'jQuery',
   'Underscore',
-  'Backbone'
-], function(_, Backbone){
+  'Backbone',
+  'libs/chroma/chroma',
+  'views/HSLBarChart',
+], function($, _, Backbone, chroma, HSLBarChart){
   var FlickrPhoto = Backbone.Model.extend({
     
 
@@ -66,6 +69,53 @@ define([
     	}
     	
     	return hues;
+    },
+    
+    processPhoto: function(){
+      this.collection.currentPhoto = this;
+      var canvas = $('#modal_'+this.collection.weekNumber+' .imageCanvas')[0];
+    	var context = canvas.getContext("2d");
+    	var self = this;
+    	context.clearRect(0, 0, canvas.width, canvas.height);
+        // load image from data url
+        var imageObj = new Image();
+        imageObj.onload = function(){
+    		  context.clearRect(0, 0, canvas.width, canvas.height);
+    		  $('#modal_'+self.collection.weekNumber+' .imageCanvas').hide();
+  			  HSLBarChart.clear('#modal_'+self.collection.weekNumber+' .smallChart');
+    		  context.drawImage(imageObj, 0, 0);
+          $.getJSON('/json/hsl_'+self.id+'.json', function success(data){
+    			  console.log('cached hue data found');
+            $('#modal_'+self.collection.weekNumber+' .imageCanvas').attr('height',imageObj.height).attr('width', imageObj.width);
+            $('#modal_'+self.collection.weekNumber+' .colorModal').animate({width:imageObj.width+360+5,height:imageObj.height,duration:750}, function complete(){
+      			  context.drawImage(imageObj, 0, 0);
+      			  $('#modal_'+self.collection.weekNumber+' .imageCanvas').show();
+        			HSLBarChart.render('#modal_'+self.collection.weekNumber+' .smallChart',data,1);
+            });
+      		}).error(function error(err){
+      			console.log('no hue data cached on server');
+      			var hues = self.sampleHSL(canvas);
+
+      			var huesJSON = JSON.stringify(hues);
+          	$.ajax({
+          	  type: 'POST',
+          	  url: '/hues/json',
+          	  data: {'hues_json':huesJSON, 'photo_id':self.id},
+          	  success: function(success){
+
+          		  console.log('posted data');
+          		}
+          	});
+      			$('#modal_'+self.collection.weekNumber+' .imageCanvas').attr('height',imageObj.height).attr('width', imageObj.width);
+            $('#modal_'+self.collection.weekNumber+' .colorModal').animate({width:imageObj.width+360+5,height:imageObj.height,duration:750}, function complete(){
+      			  context.drawImage(imageObj, 0, 0);
+      			  $('#modal_'+self.collection.weekNumber+' .imageCanvas').show();
+        			HSLBarChart.render('#modal_'+self.collection.weekNumber+' .smallChart',data,1);
+            });
+      		});
+        };
+
+        imageObj.src = '/flickr_image/' + encodeURIComponent(this.getPhotoUrl(""));
     }
     
   });

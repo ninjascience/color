@@ -10,8 +10,10 @@ define([
   'views/PhotoThumb',
   'views/HSLBarChart',
 ], function($, _, Backbone, Bootstrap, FlickrPhoto, PhotoSet, PhotoThumb, HSLBarChart){
+  
+  var set2011 = [];
   $.getJSON('/json/rhone/2011.json', function success(data){
-	  
+	  set2011 = data;
 	  var weeks = [];
 	  
 	  data.map(function(photo) {
@@ -26,16 +28,47 @@ define([
 	  });
 	  
 	  weeks.map(function(photoSet){
-	    $('#weekGalleries').append('<ul id="weekGallery_'+photoSet.weekNumber+'" class="thumbnails"/>');
+	    var modalTemplate = $('#modalTemplate').html();
+	    var modal = _.template(modalTemplate)({collectionId:photoSet.weekNumber});
+	    $('#weekGalleries')
+	      .append('<ul id="weekGallery_'+photoSet.weekNumber+'" class="thumbnails"/>')
+	      .append(modal);
 	    photoSet.map(function(photo) {
 	      var view = new PhotoThumb({'model':photo});
-        //view.clickHandler = clickHandler;
         var el = view.render().el;
 	      $('#weekGallery_'+photoSet.weekNumber).append(el);
 	    });
+	    
+      $('#weekGallery_' + photoSet.weekNumber + ' #prevNav').click(function prevClick(event) {
+        var index = photoSet.indexOf(photoSet.currentPhoto);
+        if(index > 0) {
+          var prevPhoto = photoSet.at(index-1);
+          processPhoto();
+        }
+      });
+      $('#weekGallery_' + photoSet.weekNumber + ' #nextNav').click(function nextClick(event) {
+        var index = photoSet.indexOf(photoSet.currentPhoto);
+        if(index < photoSet.length-1) {
+          var nextPhoto = photoSet.at(index+1);
+          processPhoto();
+        }
+      });
 	  });
 	  
+	  
 	})
+	
+	function clickHandler(photo) {
+	  $('#sendButton').show();
+	  for(var i in set2011)
+	  {
+	    if(set2011[i].id === photo.id){
+	      set2011.splice(i,1);
+	      $('#thumb_'+photo.id).parent().remove();
+	      break;
+	    }
+	  }
+	}
 	
 	function getWeek(date) {
 	  var year = date.getFullYear();

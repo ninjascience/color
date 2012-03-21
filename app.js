@@ -48,7 +48,9 @@ app.get('/flickr_image/:image_url', function(request_from_client, response_to_cl
   var image_url = request_from_client.params.image_url;
   var pathname = url.parse(image_url).pathname;
   var filename = pathname.split("/").pop();
-
+  //filename=image_url.replace(':','-');
+  //var slashRegEx=/\//g;
+  //filename=filename.replace(slashRegEx,'_');
 	var http_client;
 	var image_get_request;
   var image_host_name;
@@ -76,6 +78,12 @@ app.get('/flickr_image/:image_url', function(request_from_client, response_to_cl
     		  current_byte_index += chunk.length;
     		});
     		proxy_response.addListener('end', function(){
+    		  var stream = fs.createWriteStream('public/images/cache/'+filename);
+        	stream.once('open', function(fd) {
+        	  stream.write(response_body, function(){
+        	    //stream.close();
+        	  });
+        	});
     		  response_to_client.contentType(filename);
     		  response_to_client.send(response_body);
     		});
@@ -99,6 +107,17 @@ function getFile(localPath, res) {
   });
 }
 
+
+
+app.post('/save_json', function(request_from_client, response_to_client){
+	var data = request_from_client.body.data;
+	var filename = request_from_client.body.filename;
+	var stream = fs.createWriteStream('public/json/'+filename);
+	stream.once('open', function(fd) {
+	  stream.write(data);
+	});
+	response_to_client.send('');
+});
 
 
 app.post('/hues/json', function(request_from_client, response_to_client){
