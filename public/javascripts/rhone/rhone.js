@@ -41,11 +41,14 @@ define([
         
   		}).error(function error(err){
   			console.log('no hue data cached on server for week: ' + photoSet.weekNumber);
-  			$('#weekGallery_'+photoSet.weekNumber+' li').first().click(function(event){
-  			  photoSet.currentPhoto = photoSet.models[0];
-  			  process(photoSet.currentPhoto, []);
-  			});
+  			
       });
+      $('#weekGallery_'+photoSet.weekNumber+' li').first().click(function(event){
+        //var context = $('#weekChart_'+photo.collection.weekNumber)[0].getContext("2d");
+      	//context.fillRect(0, 0, canvas.width, canvas.height);
+			  photoSet.currentPhoto = photoSet.models[0];
+			  process(photoSet.currentPhoto, []);
+			});
 	  });
 	  
 	})
